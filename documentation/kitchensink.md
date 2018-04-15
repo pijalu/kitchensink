@@ -19,6 +19,7 @@ KitchenSink toolset is devops oriented set of utilites, grouped within a single 
 * [kitchensink completion](kitchensink_completion.md)	 - Generate kitchensink bash completion
 * [kitchensink doc](kitchensink_doc.md)	 - Generate markdown documentation of the tool
 * [kitchensink proxy](kitchensink_proxy.md)	 - Start a proxy server to connect to a remote address
+* [kitchensink serve](kitchensink_serve.md)	 - Start a static file http server
 * [kitchensink tunnel](kitchensink_tunnel.md)	 - tunnel create a on-demand ssh tunnel to a given host/port  
 * [kitchensink waitconn](kitchensink_waitconn.md)	 - Wait for a socket to be open
 
