@@ -50,5 +50,6 @@ func init() {
 		Username:    tunnelCmd.Flags().StringP("user", "u", "", "Username to use for remote connection. Default to current username"),
 		Password:    tunnelCmd.Flags().StringP("password", "w", "", "Password to use for authentication. Default: none"),
 		KeyFile:     tunnelCmd.Flags().StringP("keyfile", "k", "", "Private key file to use."),
+		Force:       tunnelCmd.Flags().BoolP("force", "f", false, "Keep trying to connect to ssh host even if down. Default: false"),
 	}
 }

@@ -20,6 +20,8 @@ import (
 type Config struct {
 	QuietFlag *bool
 
+	Force *bool
+
 	Protocol   *string
 	SourceAddr *string
 	SSHAddr    *string
@@ -48,6 +50,7 @@ func (c *Config) log() *quietlog.QuietLogger {
 	return c.Log
 }
 
+// tunnelServer keeps the actual connection struct
 type tunnelServer struct {
 	c  *Config
 	m  sync.Mutex
@@ -78,6 +81,7 @@ func (t *tunnelServer) loadKey(privateKey string) (ssh.Signer, error) {
 func (t *tunnelServer) clientConfig() *ssh.ClientConfig {
 	config := ssh.ClientConfig{
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
+		Timeout:         *t.c.DialTimeOut,
 	}
 
 	// Get current user
@@ -133,20 +137,21 @@ func (t *tunnelServer) clientConfig() *ssh.ClientConfig {
 	return &config
 }
 
-func (t *tunnelServer) connect() {
+func (t *tunnelServer) connect() error {
 	t.wg.Add(1)
 
 	t.m.Lock()
 	defer t.m.Unlock()
 
 	if t.client != nil {
-		return
+		return nil
 	}
 
 	client, err := ssh.Dial("tcp", *t.c.SSHAddr, t.clientConfig())
 	if err != nil {
-		t.c.log().Fatalf("Failed to connect to %s: %v", *t.c.SSHAddr, err)
-		os.Exit(1)
+		t.c.log().Printf("Failed to connect to %s: %v", *t.c.SSHAddr, err)
+		// We can't connect now but we should keep trying...
+		return err
 	}
 	t.client = client
 
@@ -158,8 +163,14 @@ func (t *tunnelServer) connect() {
 	// Start session
 	session, err := client.NewSession()
 	if err != nil {
-		t.c.log().Fatalf("Failed to start session on %s: %v", *t.c.SSHAddr, err)
-		os.Exit(1)
+		t.c.log().Printf("Failed to start session on %s: %v", *t.c.SSHAddr, err)
+		// Cancel context/reset client
+		t.cancel()
+		t.client.Close()
+		t.client = nil
+		// Forget this WG
+		t.wg.Done()
+		return err
 	}
 
 	// Run session
@@ -208,19 +219,34 @@ func (t *tunnelServer) connect() {
 		// Reset
 		t.client = nil
 	}()
+
+	return nil
 }
 
 func (t *tunnelServer) handle(inputConn net.Conn) {
 	// Connect as needed
-	t.connect()
+	if err := t.connect(); err != nil {
+		if !*t.c.Force {
+			os.Exit(1)
+		}
+	}
 
 	outputConn, err := t.client.Dial(*t.c.Protocol, *t.c.TargetAddr)
 	if err != nil {
-		t.c.log().Fatalf("Failed to dial %s/%s", *t.c.TargetAddr, *t.c.Protocol)
-		os.Exit(1)
+		t.c.log().Printf("Failed to dial %s/%s", *t.c.TargetAddr, *t.c.Protocol)
+		if !*t.c.Force {
+			os.Exit(1)
+		}
+		// Close input stream
+		inputConn.Close()
+		// Clean up: Mark connection as done to close session if needed
+		t.wg.Done()
 	}
+
+	// Prepare context for connections copies
 	ctx, cancel := context.WithCancel(t.ctx)
 
+	// Cleanup goroutine, using copy context
 	go func() {
 		<-ctx.Done()
 		t.wg.Done()
@@ -234,6 +260,7 @@ func (t *tunnelServer) handle(inputConn net.Conn) {
 			inputConn.RemoteAddr())
 	}()
 
+	// Copy func
 	copyFunc := func(r io.Reader, w io.Writer) {
 		defer cancel()
 		_, err := io.Copy(w, r)
@@ -247,6 +274,7 @@ func (t *tunnelServer) handle(inputConn net.Conn) {
 		}
 	}
 
+	// Copy stream in both direction
 	go copyFunc(inputConn, outputConn)
 	go copyFunc(outputConn, inputConn)
 }
