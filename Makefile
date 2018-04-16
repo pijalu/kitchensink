@@ -10,14 +10,18 @@ EXE=./kitchensink
 
 all: build test vet doc
 
+
+${GOPATH}/bin/dep:
+	$(GOGET) github.com/golang/dep/cmd/dep
+
 ${GOPATH}/bin/mockgen:
 	$(GOGET) github.com/golang/mock/mockgen
 
 generate: ${GOPATH}/bin/mockgen
 	$(GOGEN) ./...
 
-deps: generate
-	$(GOGET) ./...
+deps: ${GOPATH}/bin/dep generate
+	dep ensure
 
 test:
 	$(GOCMD) test -v ./...
