@@ -16,8 +16,14 @@
 package cmd
 
 import (
+	"crypto/tls"
+	"fmt"
 	"net/http"
+	"os"
+	"os/user"
+	"time"
 
+	"github.com/kabukky/httpscerts"
 	"github.com/pijalu/kitchensink/quietlog"
 	"github.com/spf13/cobra"
 )
@@ -25,6 +31,7 @@ import (
 type serveConfig struct {
 	bindAddr  *string
 	servePath *string
+	useSSL    *bool
 	QuietFlag *bool
 }
 
@@ -33,6 +40,19 @@ func (s *serveConfig) Quiet() bool {
 }
 
 var serveCfg serveConfig
+
+func secretDirectory() string {
+	// Get current user
+	user, err := user.Current()
+	if err != nil {
+		panic(err)
+	}
+
+	return fmt.Sprintf("%s%c.kitchensink%c",
+		user.HomeDir,
+		os.PathSeparator,
+		os.PathSeparator)
+}
 
 // serveCmd represents the serve command
 var serveCmd = &cobra.Command{
@@ -47,9 +67,52 @@ var serveCmd = &cobra.Command{
 			*serveCfg.bindAddr,
 			*serveCfg.servePath)
 
+		// Setup TLS followin cloudfare advice (https://blog.cloudflare.com/exposing-go-on-the-internet/)
+		tlsConfig := &tls.Config{
+			// Causes servers to use Go's default ciphersuite preferences,
+			// which are tuned to avoid attacks. Does nothing on clients.
+			PreferServerCipherSuites: true,
+			// Only use curves which have assembly implementations
+			CurvePreferences: []tls.CurveID{
+				tls.CurveP256,
+				tls.X25519, // Go 1.8 only
+			},
+		}
+
+		// Setup server
+		srv := &http.Server{
+			Addr:         *serveCfg.bindAddr,
+			ReadTimeout:  5 * time.Second,
+			WriteTimeout: 10 * time.Second,
+			IdleTimeout:  120 * time.Second,
+			TLSConfig:    tlsConfig,
+		}
+
 		fs := http.FileServer(http.Dir(*serveCfg.servePath))
 		http.Handle("/", fs)
-		if err := http.ListenAndServe(*serveCfg.bindAddr, nil); err != nil {
+
+		var err error
+		if *serveCfg.useSSL {
+			secretDir := secretDirectory()
+			cert := fmt.Sprintf("%s%s", secretDir, "serve-cert.pem")
+			key := fmt.Sprintf("%s%s", secretDir, "serve-key.pem")
+			if err := httpscerts.Check(cert, key); err != nil {
+				if err := os.MkdirAll(secretDir, 0755); err != nil {
+					log.Printf("Failed to create secret directory: %v", err)
+					os.Exit(1)
+				}
+				log.Printf("Generating new certificate in %s", secretDir)
+				if err := httpscerts.Generate(cert, key, *serveCfg.bindAddr); err != nil {
+					log.Printf("Failed to generate certificate: %v", err)
+					os.Exit(1)
+				}
+			}
+			err = srv.ListenAndServeTLS(cert, key)
+		} else {
+			err = srv.ListenAndServe()
+		}
+
+		if err != nil {
 			log.Fatalf("Error during serve: %v", err)
 		}
 	},
@@ -61,5 +124,9 @@ func init() {
 	serveCfg = serveConfig{
 		bindAddr:  serveCmd.Flags().StringP("listen", "l", "0.0.0.0:8080", "Bind address. Default: 0.0.0.0:8080"),
 		servePath: serveCmd.Flags().StringP("path", "p", ".", "Serve path. Default: working dir"),
+		useSSL: serveCmd.Flags().BoolP("ssl", "s", false,
+			fmt.Sprintf("Serve via ssl protocol. Default: false. This command will use %sserve-cert.pem and %sserve-key.pem. If not present, these files will be created",
+				secretDirectory(),
+				secretDirectory())),
 	}
 }

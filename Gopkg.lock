@@ -43,6 +43,12 @@
   version = "v1.0"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/kabukky/httpscerts"
+  packages = ["."]
+  revision = "617593d7dcb39c9ed617bb62c5e2056244d02184"
+
+[[projects]]
   name = "github.com/magiconair/properties"
   packages = ["."]
   revision = "c3beff4c2358b44d0493c7dda585e7db7ff28ae6"
@@ -125,19 +131,19 @@
     "poly1305",
     "ssh"
   ]
-  revision = "d6449816ce06963d9d136eee5a56fca5b0616e7e"
+  revision = "e73bf333ef8920dbb52ad18d4bd38ad9d9bc76d7"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/net"
   packages = ["context"]
-  revision = "a35a21de978d84ffc92f010a153705b170b2f9d1"
+  revision = "5f9ae10d9af5b1c89ae6904293b14b064d4ada23"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix"]
-  revision = "2f57af4873d00d535c5c9028850aa2152e6a5566"
+  revision = "79b0c6888797020a994db17c8510466c72fe75d9"
 
 [[projects]]
   name = "golang.org/x/text"
@@ -161,6 +167,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "f6e93cd1736fc7b7ae5169c26b2c282e6113c9d6e2beabaa9404ccbde21c9f8a"
+  inputs-digest = "1b5a63ce8779df556f3b6e8ac75742e38e2af7f58cbea0065a3bee8207ad6cf9"
   solver-name = "gps-cdcl"
   solver-version = 1

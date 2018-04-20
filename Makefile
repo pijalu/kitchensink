@@ -20,7 +20,9 @@ ${GOPATH}/bin/mockgen:
 generate: ${GOPATH}/bin/mockgen
 	$(GOGEN) ./...
 
-deps: ${GOPATH}/bin/dep generate
+deps: generate
+
+redep: ${GOPATH}/bin/dep
 	dep ensure
 
 test:
