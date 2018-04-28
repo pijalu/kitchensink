@@ -32,7 +32,7 @@ vet:
 	$(GOVET) -v
 
 $(EXE): deps
-	$(GOBUILD) -v -o $(EXE)
+	$(GOBUILD) -ldflags="-s -w" -v -o $(EXE)
 
 build: $(EXE)
 
@@ -49,6 +49,3 @@ run: $(EXE)
 
 install: all
 	$(GOINSTALL)
-
-
-
