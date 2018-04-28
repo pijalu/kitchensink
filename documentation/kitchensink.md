@@ -1,6 +1,6 @@
 ## kitchensink
 
-KitchenSink is a toolset of usefull devops utilities
+KitchenSink is a toolset of useful devops utilities
 
 ### Synopsis
 
