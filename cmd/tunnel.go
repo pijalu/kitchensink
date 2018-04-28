@@ -43,13 +43,13 @@ func init() {
 	rootCmd.AddCommand(tunnelCmd)
 
 	tunnelConfig = tunnel.Config{
-		Protocol:    tunnelCmd.Flags().StringP("protocol", "p", "tcp", "Protocol: tcp or udp. Default tcp"),
-		DialTimeOut: tunnelCmd.Flags().DurationP("timeout", "t", 30*time.Second, "Timeout for connect. Default 30sec"),
+		Protocol:    tunnelCmd.Flags().StringP("protocol", "p", "tcp", "Protocol: tcp or udp."),
+		DialTimeOut: tunnelCmd.Flags().DurationP("timeout", "t", 30*time.Second, "Timeout for connect."),
 		QuietFlag:   &quietFlag,
-		RemoteCmd:   tunnelCmd.Flags().StringP("cmd", "c", "vmstat 5", "Remote command to run on ssh host. Default to 'vmstat 5'"),
-		Username:    tunnelCmd.Flags().StringP("user", "u", "", "Username to use for remote connection. Default to current username"),
-		Password:    tunnelCmd.Flags().StringP("password", "w", "", "Password to use for authentication. Default: none"),
+		RemoteCmd:   tunnelCmd.Flags().StringP("cmd", "c", "vmstat 5", "Remote command to run on ssh host."),
+		Username:    tunnelCmd.Flags().StringP("user", "u", "", "Username to use for remote connection."),
+		Password:    tunnelCmd.Flags().StringP("password", "w", "", "Password to use for authentication."),
 		KeyFile:     tunnelCmd.Flags().StringP("keyfile", "k", "", "Private key file to use."),
-		Force:       tunnelCmd.Flags().BoolP("force", "f", false, "Keep trying to connect to ssh host even if down. Default: false"),
+		Force:       tunnelCmd.Flags().BoolP("force", "f", false, "Keep trying to connect to ssh host even if down."),
 	}
 }

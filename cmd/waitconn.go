@@ -39,10 +39,10 @@ var waitconnCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(waitconnCmd)
 	waitConn = waitconn.Command{
-		Protocol:          waitconnCmd.Flags().StringP("protocol", "p", "tcp", "Protocol: tcp or udp. Default tcp"),
-		Tries:             waitconnCmd.Flags().IntP("tries", "n", 0, "Number of tries, 0 for no limits. Default 0"),
-		WaitDelay:         waitconnCmd.Flags().DurationP("wait", "w", 1000*time.Millisecond, "Time to wait between tries. Default 1sec"),
-		ConnectionTimeout: waitconnCmd.Flags().DurationP("timeout", "t", 30000*time.Millisecond, "Timeout for connection. Default 30sec"),
+		Protocol:          waitconnCmd.Flags().StringP("protocol", "p", "tcp", "Protocol: tcp or udp."),
+		Tries:             waitconnCmd.Flags().IntP("tries", "n", 0, "Number of tries, 0 for no limits."),
+		WaitDelay:         waitconnCmd.Flags().DurationP("wait", "w", 1000*time.Millisecond, "Time to wait between tries."),
+		ConnectionTimeout: waitconnCmd.Flags().DurationP("timeout", "t", 30000*time.Millisecond, "Timeout for connection."),
 		QuietFlag:         &quietFlag,
 	}
 }

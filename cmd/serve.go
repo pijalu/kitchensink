@@ -122,10 +122,10 @@ func init() {
 	rootCmd.AddCommand(serveCmd)
 
 	serveCfg = serveConfig{
-		bindAddr:  serveCmd.Flags().StringP("listen", "l", "0.0.0.0:8080", "Bind address. Default: 0.0.0.0:8080"),
-		servePath: serveCmd.Flags().StringP("path", "p", ".", "Serve path. Default: working dir"),
+		bindAddr:  serveCmd.Flags().StringP("listen", "l", "0.0.0.0:8080", "Bind address."),
+		servePath: serveCmd.Flags().StringP("path", "p", ".", "Serve path."),
 		useSSL: serveCmd.Flags().BoolP("ssl", "s", false,
-			fmt.Sprintf("Serve via ssl protocol. Default: false. This command will use %sserve-cert.pem and %sserve-key.pem. If not present, these files will be created",
+			fmt.Sprintf("Serve via ssl protocol. This command will use %sserve-cert.pem and %sserve-key.pem. If not present, these files will be created",
 				secretDirectory(),
 				secretDirectory())),
 	}

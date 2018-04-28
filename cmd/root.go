@@ -54,7 +54,7 @@ func init() {
 	// will be global for your application.
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.kitchensink.yaml)")
 
-	rootCmd.PersistentFlags().BoolVarP(&quietFlag, "quiet", "q", false, "Be quiet. Default value false")
+	rootCmd.PersistentFlags().BoolVarP(&quietFlag, "quiet", "q", false, "Be quiet.")
 }
 
 // initConfig reads in config file and ENV variables if set.

@@ -42,8 +42,8 @@ func init() {
 	rootCmd.AddCommand(proxyCmd)
 
 	pxy = proxy.Proxy{
-		Protocol:    proxyCmd.Flags().StringP("protocol", "p", "tcp", "Protocol: tcp or udp. Default tcp"),
-		DialTimeOut: proxyCmd.Flags().DurationP("timeout", "t", 30*time.Second, "Timeout for connect. Default 30sec"),
+		Protocol:    proxyCmd.Flags().StringP("protocol", "p", "tcp", "Protocol: tcp or udp."),
+		DialTimeOut: proxyCmd.Flags().DurationP("timeout", "t", 30*time.Second, "Timeout for connect."),
 		QuietFlag:   &quietFlag,
 	}
 }
