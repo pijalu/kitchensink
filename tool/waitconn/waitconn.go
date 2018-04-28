@@ -9,7 +9,7 @@ import (
 	"github.com/pijalu/kitchensink/quietlog"
 )
 
-// Waitconn implements the waitconn tool
+// Command stores all waitconn configs
 type Command struct {
 	// Protocol for the tool
 	Protocol *string
