@@ -32,7 +32,7 @@ var quietFlag bool
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:     "kitchensink",
-	Short:   "KitchenSink is a toolset of usefull devops utilities",
+	Short:   "KitchenSink is a toolset of useful devops utilities",
 	Long:    `KitchenSink toolset is devops oriented set of utilites, grouped within a single executable.`,
 	Version: version,
 }

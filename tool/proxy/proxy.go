@@ -21,7 +21,7 @@ type Proxy struct {
 	Log         *quietlog.QuietLogger
 }
 
-// Quiet returns true if the tool should keep beeing quiet
+// Quiet returns true if the tool should keep being quiet
 func (proxy *Proxy) Quiet() bool {
 	return (proxy.QuietFlag != nil) && *proxy.QuietFlag
 }

@@ -37,7 +37,7 @@ type Config struct {
 	Log         *quietlog.QuietLogger
 }
 
-// Quiet returns true if the tool should keep beeing quiet
+// Quiet returns true if the tool should keep being quiet
 func (c *Config) Quiet() bool {
 	return (c.QuietFlag != nil) && *c.QuietFlag
 }
