@@ -110,7 +110,7 @@ func (t *tunnelServer) clientConfig() *ssh.ClientConfig {
 			t.c.log().Fatalf("Failed to load key %s: %v", *t.c.KeyFile, err)
 			os.Exit(1)
 		} else {
-			t.c.log().Fatalf("Loaded key %s")
+			t.c.log().Printf("Loaded key %s", *t.c.KeyFile)
 		}
 		config.Auth = append(config.Auth, ssh.PublicKeys(signer))
 	} else { // load usual home key
